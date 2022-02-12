@@ -16,8 +16,6 @@ selenium-debug.log
 *.njsproj
 *.sln
 
-build
-
 
 # Created by https://www.toptal.com/developers/gitignore/api/vue,vuejs,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=vue,vuejs,node

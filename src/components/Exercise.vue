@@ -1,23 +1,26 @@
 <template>
-  <div class="hello">
+  <div class="exercise">
     <h1>Üben</h1>
-    <div class="pattern">
-      <span
-        v-for="(p, index) in patternSingleLetters" :key="p">
-          <span
-            class="beat"
-            :class="{ active: index === currentOverallBeat }">
-            {{p}}
-          </span>
-          <span v-if="(index + 1) % beats === 0 && index < patternSingleLetters.length - 1">/</span>
-      </span>
-    </div>
-    <div>
-      Schlag: {{currentBeat}}
-    </div>
-    <div>
-      <router-link to="/">Abbrechen</router-link>
-      <router-link to="/Review">Review</router-link>
+    <div class="task">
+      <div class="pattern">
+        <span
+          v-for="(p, index) in patternSingleLetters" :key="p">
+            <span
+              class="beat"
+              :class="{ active: index === currentOverallBeat }">
+              {{p}}
+            </span>
+            <span class="measuredivider" v-if="(index + 1) % beats === 0 && index < patternSingleLetters.length - 1">/</span>
+        </span>
+      </div>
+      <div class="beatcounter">
+        Schlag: {{currentBeat}}
+      </div>
+        <button @click="startExercise()">{{ startstop }}</button>
+      <div>
+        <router-link to="/">Abbrechen</router-link>
+<!--        <router-link to="/Review">Review</router-link>-->
+      </div>
     </div>
   </div>
 </template>
@@ -29,7 +32,8 @@ export default {
     return {
       bpm: 60,
       currentOverallBeat: 0,
-      timerInterval: null
+      timerId: null,
+      startstop: '▶'
     }
   },
   computed: {
@@ -63,13 +67,32 @@ export default {
   mounted () {
     this.bpm = this.$route.params.bpm
     this.currentOverallBeat = 0
-    this.startExercise()
+    this.startstop = '▶'
+    this.timerId = 0
+    this._keyListener = function (e) {
+      if (e.key === ' ') {
+        e.preventDefault()
+        this.startExercise()
+      }
+    }
+    document.addEventListener('keydown', this._keyListener.bind(this))
+  },
+  beforeDestroy() {
+    document.removeEventListener('keydown', this._keyListener)
   },
   methods: {
     startExercise () {
-      this.timerInterval = setInterval(
-        () => (this.currentOverallBeat = (this.currentOverallBeat + 1) % (this.patternSingleLetters.length)),
-        60000 / this.bpm)
+      if (this.timerId === 0) {
+        this.startstop = '‖'
+        this.timerId = setInterval(
+          () => (this.currentOverallBeat = (this.currentOverallBeat + 1) % (this.patternSingleLetters.length)),
+          60000 / this.bpm)
+      } else {
+        clearInterval(this.timerId)
+        this.timerId = 0
+        this.startstop = '▶'
+        this.currentOverallBeat = 0
+      }
     }
   }
 }
@@ -77,16 +100,22 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.task {
+  text-align: center;
+}
 .pattern {
-  margin-top: 1em;
-  font-size: 30pt;
-  margin-bottom: 1em;
+  margin-top: 2em;
+  font-size: 4.8vw;
+  margin-bottom: 2em;
+  font-weight: bold;
+  /*text-transform: uppercase;*/
 }
 .beat.active {
   color: red;
 }
-h1, h2 {
-  font-weight: normal;
+.beatcounter {
+  margin: 2em 0em;
+  font-size: 16pt;
 }
 ul {
   list-style-type: none;
@@ -98,5 +127,8 @@ li {
 }
 a {
   color: #42b983;
+}
+.measuredivider {
+  margin: 0 0.5em;
 }
 </style>
