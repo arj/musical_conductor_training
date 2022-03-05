@@ -55,11 +55,11 @@
         <li><router-link :to="{ name: 'Exercise', params: { pattern: 'rlrllrlrrlrllrlr', beats: 4, bpm: speed}}">6.20 rlrl / lrlr / rlrl / lrlr</router-link></li>
       </ul>
     </div>
-    <h2>Selbstdefinierte Übungen</h2>
-    In Arbeit...
+<!--    <h2>Selbstdefinierte Übungen</h2>-->
+<!--    In Arbeit...-->
     <h2>Einstellungen</h2>
     <div>
-      <md-switch v-model="recording">Videoaufzeichnung</md-switch> <br />
+<!--      <md-switch v-model="recording">Videoaufzeichnung</md-switch> <br />-->
       <input type="range" min="40" max="180" v-model="speed"/> ♩={{speed}}
     </div>
   </div>
@@ -85,7 +85,8 @@ ul {
   padding: 0;
 }
 li {
-  /*display: inline-block;*/
+  display: inline-block;
+  width: 180px;
   margin: 5px 20px;
 }
 a {
