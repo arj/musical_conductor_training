@@ -77,7 +77,7 @@ export default {
     }
     document.addEventListener('keydown', this._keyListener.bind(this))
   },
-  beforeDestroy() {
+  beforeDestroy () {
     document.removeEventListener('keydown', this._keyListener)
   },
   methods: {
