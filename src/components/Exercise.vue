@@ -2,6 +2,7 @@
   <div class="exercise">
     <h1>Üben</h1>
     <div class="task">
+      <video id="preview" width="400" autoplay muted></video>
       <div class="pattern">
         <span
           v-for="(p, index) in patternSingleLetters" :key="p">
@@ -69,6 +70,7 @@ export default {
     this.currentOverallBeat = 0
     this.startstop = '▶'
     this.timerId = 0
+    this.startRecording()
     this._keyListener = function (e) {
       if (e.key === ' ') {
         e.preventDefault()
@@ -79,6 +81,10 @@ export default {
   },
   beforeDestroy () {
     document.removeEventListener('keydown', this._keyListener)
+  },
+  beforeRouteLeave (to, from, next) {
+    this.stopStreaming()
+    return next()
   },
   methods: {
     startExercise () {
@@ -93,6 +99,35 @@ export default {
         this.startstop = '▶'
         this.currentOverallBeat = 0
       }
+    },
+    stopStreaming () {
+      let preview = document.getElementById('preview')
+      preview.captureStream = null
+      preview.srcObject.getTracks().forEach(track => track.stop())
+    },
+    startRecording () {
+      navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      }).then(stream => {
+        let preview = document.getElementById('preview')
+        preview.srcObject = stream
+        preview.captureStream = preview.captureStream || preview.mozCaptureStream
+        return new Promise(
+          resolve => {
+            preview.onplaying = resolve
+          })
+      }).then(() => '') // /*startRecording(preview.captureStream(), recordingTimeMS)*/
+        .then(recordedChunks => {
+          // let recordedBlob = new Blob(recordedChunks, {type: "video/webm"});
+          // recording.src = URL.createObjectURL(recordedBlob);
+          // downloadButton.href = recording.src;
+          // downloadButton.download = "RecordedVideo.webm";
+          //
+          // log("Successfully recorded " + recordedBlob.size + " bytes of " +
+          //   recordedBlob.type + " media.");
+        })
+        .catch(console.log)
     }
   }
 }
@@ -103,8 +138,11 @@ export default {
 .task {
   text-align: center;
 }
+#preview {
+  transform: scale(-1,1)
+}
 .pattern {
-  margin-top: 2em;
+  margin-top: 1em;
   font-size: 4.8vw;
   margin-bottom: 2em;
   font-weight: bold;
