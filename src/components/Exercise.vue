@@ -108,7 +108,7 @@ export default {
     startRecording () {
       navigator.mediaDevices.getUserMedia({
         video: true,
-        audio: true
+        audio: false
       }).then(stream => {
         let preview = document.getElementById('preview')
         preview.srcObject = stream
